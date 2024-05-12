@@ -23,7 +23,7 @@ export default function Cell({
 
     content = "";
   } else {
-    cssClasses = "aspect-square flex-1 border text-center font-bold text-sm";
+    cssClasses = "aspect-square flex-1 border text-center font-bold text-sm cursor-pointer";
     cssClasses +=
       grid[indexRow][indexCol] === "black"
         ? " bg-stone-900 border-black"
@@ -54,8 +54,8 @@ export default function Cell({
     <div
       className={getCorrectStyle(indexRow, indexCol)}
       style={{ width: `${hCell}px` }}
-      onClick={(e) => click(e, indexRow, indexCol)}
-      onContextMenu={(e) => click(e, indexRow, indexCol)}
+      onClick={(e) => {!info && click(e, indexRow, indexCol)}}
+      onContextMenu={(e) => {!info && click(e, indexRow, indexCol)}}
     >
       {content}
     </div>

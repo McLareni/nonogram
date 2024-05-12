@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import DUMMY_APPLE from "./scripts/DUMMY_APPLE";
 import { generationArray } from "./scripts/generation.js";
@@ -33,12 +33,13 @@ infoLineHorizontal.map((row, index) => {
 function App() {
   const dialog = useRef();
   const [grid, setGrid] = useState({
-    grid: generationArray(DUMMY_APPLE.grid.length, DUMMY_APPLE.grid[0].length),
+    grid:
+      JSON.parse(localStorage.getItem("grid")) === null
+        ? generationArray(DUMMY_APPLE.grid.length, DUMMY_APPLE.grid[0].length)
+        : JSON.parse(localStorage.getItem("grid")),
     statusLineVertical: GetRowsTabsVertical(DUMMY_APPLE.grid).statusTabList,
     statusLineHorizontal: GetRowsTabsHorizontal(DUMMY_APPLE.grid).statusTabList,
   });
-
-
 
   function changeColor(indexRow, indexCol, color) {
     setGrid((prev) => {
@@ -47,6 +48,7 @@ function App() {
       curr.grid = [...prev.grid];
 
       curr.grid[indexRow][indexCol] = color;
+      localStorage.setItem("grid", JSON.stringify(curr.grid));
       return curr;
     });
   }
@@ -65,13 +67,13 @@ function App() {
           };
           if (close && currGrid.grid[i][row] !== "black") {
             currGrid.grid[i][row] = "X";
-            if(emptyCol.indexOf(row) === -1){
+            if (emptyCol.indexOf(row) === -1) {
               emptyCol.push(row);
             }
           }
           if (open && currGrid.grid[i][row] !== "black") {
             currGrid.grid[i][row] = "white";
-            emptyCol = emptyCol.filter(colIndex => colIndex != row);
+            emptyCol = emptyCol.filter((colIndex) => colIndex != row);
           }
 
           return currGrid;
@@ -87,14 +89,14 @@ function App() {
           console.log(currGrid.grid[row][index]);
           if (close && currGrid.grid[row][index] !== "black") {
             currGrid.grid[row][index] = "X";
-            if(emptyRow.indexOf(row) === -1){
+            if (emptyRow.indexOf(row) === -1) {
               emptyRow.push(row);
               console.log(emptyRow);
             }
           }
           if (open && currGrid.grid[row][index] !== "black") {
             currGrid.grid[row][index] = "white";
-            emptyRow = emptyRow.filter(rowIndex => rowIndex !== row);
+            emptyRow = emptyRow.filter((rowIndex) => rowIndex !== row);
           }
         });
         return currGrid;
@@ -102,10 +104,15 @@ function App() {
     }
   }
 
-  if (JSON.stringify(grid.grid) == JSON.stringify(DUMMY_APPLE.grid)) {
-    dialog.current.open();
-  }
+  useEffect(() => {
+    let finishGrid = grid.grid.map((row) => [...row]);
 
+    finishGrid = finishGrid.map(row => row.map(cell => cell = cell === "black" ? "black" : "white"))
+  
+    if (JSON.stringify(finishGrid) === JSON.stringify(DUMMY_APPLE.grid)) {
+      dialog.current.open();
+    }
+  }, [grid.grid])
 
   const gridCxt = {
     name: DUMMY_APPLE.name,
@@ -115,7 +122,7 @@ function App() {
     changeColor: changeColor,
     closeLine: (row, direction, action) => closeLine(row, direction, action),
     statusLineVertical: grid.statusLineVertical,
-    statusLineHorizontal: grid.statusLineHorizontal
+    statusLineHorizontal: grid.statusLineHorizontal,
   };
 
   return (
@@ -130,10 +137,7 @@ function App() {
                   <Table scale={10} info={true} />
                 </td>
                 <td className="flex items-end w-full h-full">
-                  <InfoField
-                    direction="vertical"
-                    infoTabs={infoLineVertical}
-                  />
+                  <InfoField direction="vertical" infoTabs={infoLineVertical} />
                 </td>
                 <td className=""></td>
               </tr>
@@ -145,7 +149,7 @@ function App() {
                   />
                 </td>
                 <td className="">
-                  <Table emptyCol={emptyCol} emptyRow={emptyRow}/>
+                  <Table emptyCol={emptyCol} emptyRow={emptyRow} />
                 </td>
                 <td></td>
               </tr>

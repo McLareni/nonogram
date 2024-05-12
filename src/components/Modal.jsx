@@ -1,6 +1,10 @@
 import { forwardRef, useRef, useImperativeHandle } from "react";
 import { createPortal } from "react-dom";
 
+import DUMMY_APPLE from "../scripts/DUMMY_APPLE";
+
+import Table from "./Table";
+
 const Modal = forwardRef(function Modal({}, ref) {
   const dialog = useRef();
 
@@ -13,11 +17,15 @@ const Modal = forwardRef(function Modal({}, ref) {
   });
 
   return createPortal(
-    <dialog ref={dialog} className=" backdrop:bg-black/70">
-      <h1>You win!</h1>
-      <form method="dialog">
-        <button>Close</button>
-      </form>
+    <dialog ref={dialog} className="backdrop:bg-black/70 rounded-2xl bg-gray-200">
+      <div className="flex flex-col items-center py-5 px-8">
+        <h1 className="text-2xl">{DUMMY_APPLE.name}</h1>
+        <p className="text-stone-600 mb-6">Complete</p>
+        <Table scale={10} info={true} />
+        <form method="dialog" className="mt-6">
+          <button className="text-base text-store-700 uppercase font-bold tracking-wide outline-none">Close</button>
+        </form>
+      </div>
     </dialog>,
     document.getElementById("modal")
   );
