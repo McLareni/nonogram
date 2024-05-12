@@ -7,35 +7,7 @@ import Cell from "./Cell.jsx";
 let cell = undefined;
 let timmer, startTimmer;
 let clamp = false;
-let clikedCell = [];
-
-function handleMove(e) {
-  if (clamp) {
-    cell = e.target;
-  }
-}
-
-function handleDown(e) {
-  e.preventDefault();
-  startTimmer = setTimeout(() => {
-    clikedCell[0] = cell;
-    clamp = true;
-
-    timmer = setInterval(() => {
-      if (clikedCell.indexOf(cell) === -1) {
-        cell.click();
-        clikedCell.push(cell);
-      }
-    }, 100);
-  }, 40);
-}
-
-function handleUp() {
-  clamp = false;
-  clearInterval(timmer);
-  clearTimeout(startTimmer);
-  clikedCell = [];
-}
+let currBg;
 
 export default function Table({
   scale = 0,
@@ -43,12 +15,52 @@ export default function Table({
   emptyRow = [],
   emptyCol = [],
 }) {
-  const { grid } = useContext(GridContext);
+  const { grid, changeColor } = useContext(GridContext);
 
   let cssClasses = "flex flex-col items-center h-full w-full";
 
   if (info) {
     cssClasses += " border border-black";
+  }
+
+  function handleClick(e, indexRow, indexCol) {
+    e.preventDefault();
+    changeColor(indexRow, indexCol, currBg);
+  }
+
+  function handleMove(e) {
+    if (clamp) {
+      cell = e.target;
+    }
+  }
+
+  function handleDown(e) {
+    e.preventDefault();
+    if (e.button === 0) {
+      currBg = e.target.classList.contains("bg-stone-900") ? "white" : "black";
+    } else if (e.button === 2) {
+      currBg = "X";
+    }
+
+    e.target.click();
+
+    startTimmer = setTimeout(() => {
+      clamp = true;
+      timmer = setInterval(() => {
+        if (!cell) {
+          e.target.click();
+        } else {
+          cell.click();
+        }
+      }, 50);
+    }, 40);
+  }
+
+  function handleUp(e) {
+    clamp = false;
+    cell = undefined;
+    clearInterval(timmer);
+    clearTimeout(startTimmer);
   }
 
   return (
@@ -71,6 +83,7 @@ export default function Table({
                   key={cellIndex}
                   scale={scale}
                   info={info}
+                  click={handleClick}
                 />
               );
               if (
@@ -87,8 +100,7 @@ export default function Table({
                       defaultContent={"X"}
                     />
                   );
-                }
-                else{
+                } else {
                   return cell;
                 }
               }

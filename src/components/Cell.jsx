@@ -2,26 +2,15 @@ import { useContext } from "react";
 
 import { GridContext } from "../store/Grid-context.jsx";
 
-export default function Cell({ indexRow, indexCol, scale, info, defaultContent }) {
-  const { changeColor, width, grid } =
-    useContext(GridContext);
-
-  let handleClick = function(e) {
-    e.preventDefault();
-
-    const toBlackColor = ["white", "X"];
-
-    if (e.type === "click") {
-      let currBg =
-        toBlackColor.indexOf(grid[indexRow][indexCol]) !== -1
-          ? "black"
-          : "white";
-      changeColor(indexRow, indexCol, currBg);
-    } else{
-      let currBg = grid[indexRow][indexCol] === "X" ? "" : "X";
-      changeColor(indexRow, indexCol, currBg);
-    }
-  }
+export default function Cell({
+  indexRow,
+  indexCol,
+  scale,
+  info,
+  defaultContent,
+  click = () => {},
+}) {
+  const { width, grid } = useContext(GridContext);
 
   let hCell = 40 - width - scale;
 
@@ -33,8 +22,6 @@ export default function Cell({ indexRow, indexCol, scale, info, defaultContent }
       grid[indexRow][indexCol] === "black" ? " bg-black" : " bg-white ";
 
     content = "";
-
-    handleClick = null;
   } else {
     cssClasses = "aspect-square flex-1 border text-center font-bold text-sm";
     cssClasses +=
@@ -42,9 +29,8 @@ export default function Cell({ indexRow, indexCol, scale, info, defaultContent }
         ? " bg-stone-900 border-black"
         : " bg-white border-stone-400";
     content = grid[indexRow][indexCol] === "X" ? "X" : "";
-    if(defaultContent){
+    if (defaultContent) {
       content = defaultContent;
-      handleClick = null;
     }
   }
 
@@ -68,8 +54,8 @@ export default function Cell({ indexRow, indexCol, scale, info, defaultContent }
     <div
       className={getCorrectStyle(indexRow, indexCol)}
       style={{ width: `${hCell}px` }}
-      onClick={handleClick}
-      onContextMenu={handleClick}
+      onClick={(e) => click(e, indexRow, indexCol)}
+      onContextMenu={(e) => click(e, indexRow, indexCol)}
     >
       {content}
     </div>
