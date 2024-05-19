@@ -1,4 +1,4 @@
-import { useContext, useRef } from "react";
+import { useContext } from "react";
 
 import { GridContext } from "../store/Grid-context.jsx";
 

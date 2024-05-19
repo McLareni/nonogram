@@ -1,40 +1,23 @@
-import { useEffect, useRef, useState } from "react";
+import { useState, useEffect } from "react";
 
-import DUMMY_APPLE from "./scripts/DUMMY_APPLE";
+import DUMMY_APPLE from "./scripts/DUMMY_APPLE.js";
 import { generationArray } from "./scripts/generation.js";
 import {
   GetRowsTabsHorizontal,
   GetRowsTabsVertical,
 } from "./scripts/GetRowsTabs.js";
 
-import Modal from "./components/Modal.jsx";
-import InfoField from "./components/InfoField.jsx";
-import { GridContext } from "./store/Grid-context.jsx";
-import Table from "./components/Table.jsx";
+import GameField from "./components/GameField.jsx";
 import TopMenu from "./components/TopMenu.jsx";
+import Modal from "./components/Modal.jsx";
 
-let emptyRow = [];
-let emptyCol = [];
-
-const infoLineVertical = GetRowsTabsVertical(DUMMY_APPLE.grid).tabList;
-const infoLineHorizontal = GetRowsTabsHorizontal(DUMMY_APPLE.grid).tabList;
-
-infoLineVertical.map((col, index) => {
-  if (col.length === 0) {
-    emptyCol.push(index);
-  }
-});
-
-infoLineHorizontal.map((row, index) => {
-  if (row.length === 0) {
-    emptyRow.push(index);
-  }
-});
+import { GridContext } from "./store/Grid-context.jsx";
 
 let timer;
 
 function App() {
-  const dialog = useRef();
+  const [time, setTime] = useState(0);
+  const [ modalIsOpen, setModelIsOpen ] = useState(false);
   const [grid, setGrid] = useState({
     grid:
       JSON.parse(localStorage.getItem("grid")) === null
@@ -43,8 +26,6 @@ function App() {
     statusLineVertical: GetRowsTabsVertical(DUMMY_APPLE.grid).statusTabList,
     statusLineHorizontal: GetRowsTabsHorizontal(DUMMY_APPLE.grid).statusTabList,
   });
-
-  const [time, setTime] = useState(0);
 
   function changeColor(indexRow, indexCol, color) {
     setGrid((prev) => {
@@ -119,15 +100,18 @@ function App() {
     if (JSON.stringify(finishGrid) === JSON.stringify(DUMMY_APPLE.grid)) {
       clearTimeout(timer);
 
-      dialog.current.open();
+      setModelIsOpen(true);
+    }
+    else{
+      modalIsOpen && setModelIsOpen(false);
     }
   }, [grid.grid]);
 
   useEffect(() => {
     timer = setInterval(() => {
-      setTime((prevTime) => prevTime + 1);
+      setTime((prev => prev + 1))
     }, 1000);
-  }, [])
+  }, []);
 
   const gridCxt = {
     name: DUMMY_APPLE.name,
@@ -142,40 +126,9 @@ function App() {
 
   return (
     <GridContext.Provider value={gridCxt}>
-      <div>
-        <Modal ref={dialog} time={time}/>
-        <TopMenu time={time} />
-        <section id="table" className="">
-          <table className="border-2 border-black border-separate border-spacing-0">
-            <tbody className="w-full h-full">
-              <tr className="h-1/3">
-                <td className="max-w-fit max-h-fit">
-                  <Table scale={10} info={true} />
-                </td>
-                <td className="flex items-end w-full h-full">
-                  <InfoField direction="vertical" infoTabs={infoLineVertical} />
-                </td>
-                <td className=""></td>
-              </tr>
-              <tr className="h-1/3">
-                <td className="flex justify-end h-full w-full">
-                  <InfoField
-                    direction="horizontal"
-                    infoTabs={infoLineHorizontal}
-                  />
-                </td>
-                <td className="">
-                  <Table emptyCol={emptyCol} emptyRow={emptyRow} />
-                </td>
-                <td></td>
-              </tr>
-              <tr className="h-1/3">
-                <td></td>
-              </tr>
-            </tbody>
-          </table>
-        </section>
-      </div>
+      <Modal modalIsOpen={modalIsOpen} time={time} />
+      <TopMenu time={time} />
+      <GameField/>
     </GridContext.Provider>
   );
 }
