@@ -11,6 +11,7 @@ import Modal from "./components/Modal.jsx";
 import InfoField from "./components/InfoField.jsx";
 import { GridContext } from "./store/Grid-context.jsx";
 import Table from "./components/Table.jsx";
+import TopMenu from "./components/TopMenu.jsx";
 
 let emptyRow = [];
 let emptyCol = [];
@@ -30,6 +31,8 @@ infoLineHorizontal.map((row, index) => {
   }
 });
 
+let timer;
+
 function App() {
   const dialog = useRef();
   const [grid, setGrid] = useState({
@@ -40,6 +43,8 @@ function App() {
     statusLineVertical: GetRowsTabsVertical(DUMMY_APPLE.grid).statusTabList,
     statusLineHorizontal: GetRowsTabsHorizontal(DUMMY_APPLE.grid).statusTabList,
   });
+
+  const [time, setTime] = useState(0);
 
   function changeColor(indexRow, indexCol, color) {
     setGrid((prev) => {
@@ -107,12 +112,22 @@ function App() {
   useEffect(() => {
     let finishGrid = grid.grid.map((row) => [...row]);
 
-    finishGrid = finishGrid.map(row => row.map(cell => cell = cell === "black" ? "black" : "white"))
-  
+    finishGrid = finishGrid.map((row) =>
+      row.map((cell) => (cell = cell === "black" ? "black" : "white"))
+    );
+
     if (JSON.stringify(finishGrid) === JSON.stringify(DUMMY_APPLE.grid)) {
+      clearTimeout(timer);
+
       dialog.current.open();
     }
-  }, [grid.grid])
+  }, [grid.grid]);
+
+  useEffect(() => {
+    timer = setInterval(() => {
+      setTime((prevTime) => prevTime + 1);
+    }, 1000);
+  }, [])
 
   const gridCxt = {
     name: DUMMY_APPLE.name,
@@ -128,7 +143,8 @@ function App() {
   return (
     <GridContext.Provider value={gridCxt}>
       <div>
-        <Modal ref={dialog} />
+        <Modal ref={dialog} time={time}/>
+        <TopMenu time={time} />
         <section id="table" className="">
           <table className="border-2 border-black border-separate border-spacing-0">
             <tbody className="w-full h-full">
