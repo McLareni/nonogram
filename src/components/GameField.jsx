@@ -7,25 +7,10 @@ import {
 import Table from "../components/Table.jsx";
 import InfoField from "../components/InfoField.jsx";
 
-let emptyRow = [];
-let emptyCol = [];
-
 const infoLineVertical = GetRowsTabsVertical(DUMMY_APPLE.grid).tabList;
 const infoLineHorizontal = GetRowsTabsHorizontal(DUMMY_APPLE.grid).tabList;
 
-infoLineVertical.map((col, index) => {
-  if (col.length === 0) {
-    emptyCol.push(index);
-  }
-});
-
-infoLineHorizontal.map((row, index) => {
-  if (row.length === 0) {
-    emptyRow.push(index);
-  }
-});
-
-export default function GameField({}) {
+export default function GameField({emptyRow, emptyCol}) {
   return (
       <div>
         <section id="table" className="">

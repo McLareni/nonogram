@@ -39,7 +39,7 @@ export default function Table({
     if (e.button === 0) {
       currBg = e.target.classList.contains("bg-stone-900") ? "white" : "black";
     } else if (e.button === 2) {
-      currBg = "X";
+      currBg = "x";
     }
 
     e.target.click();

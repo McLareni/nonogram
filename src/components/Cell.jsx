@@ -28,7 +28,7 @@ export default function Cell({
       grid[indexRow][indexCol] === "black"
         ? " bg-stone-900 border-black"
         : " bg-white border-stone-400";
-    content = grid[indexRow][indexCol] === "X" ? "X" : "";
+    content = grid[indexRow][indexCol] === "X" || grid[indexRow][indexCol] === "x"  ? "X" : "";
     if (defaultContent) {
       content = defaultContent;
     }

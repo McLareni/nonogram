@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useReducer } from "react";
 
 import DUMMY_APPLE from "./scripts/DUMMY_APPLE.js";
 import { generationArray } from "./scripts/generation.js";
@@ -15,79 +15,112 @@ import { GridContext } from "./store/Grid-context.jsx";
 
 let timer;
 
+const infoLineVertical = GetRowsTabsVertical(DUMMY_APPLE.grid).tabList;
+const infoLineHorizontal = GetRowsTabsHorizontal(DUMMY_APPLE.grid).tabList;
+
+let emptyRow = [];
+let emptyCol = [];
+
+infoLineVertical.map((col, index) => {
+  if (col.length === 0) {
+    emptyCol.push(index);
+  }
+});
+
+infoLineHorizontal.map((row, index) => {
+  if (row.length === 0) {
+    emptyRow.push(index);
+  }
+});
+
+const initialGrid = {
+  grid:
+    JSON.parse(localStorage.getItem("grid")) === null
+      ? generationArray(DUMMY_APPLE.grid.length, DUMMY_APPLE.grid[0].length)
+      : JSON.parse(localStorage.getItem("grid")),
+  statusLineVertical: GetRowsTabsVertical(DUMMY_APPLE.grid).statusTabList,
+  statusLineHorizontal: GetRowsTabsHorizontal(DUMMY_APPLE.grid).statusTabList,
+};
+
+function gridReducer(state, action) {
+  let currState = {
+    grid: state.grid.map((row) => [...row]),
+    statusLineVertical: state.statusLineVertical.map((row) => [...row]),
+    statusLineHorizontal: state.statusLineHorizontal.map((row) => [...row]),
+  };
+
+  switch (action.type) {
+    case "changeColor":
+      const { indexRow, indexCol, color } = action.properties;
+
+      currState.grid[indexRow][indexCol] = color;
+      localStorage.setItem("grid", JSON.stringify(currState.grid));
+
+      return currState;
+
+    case "closeLine":
+      const { row, direction, status } = action.properties;
+
+      let close = status === "close";
+      let open = status === "open";
+
+      if (direction === "vertical") {
+        for (let i = 0; i < currState.grid.length; i++) {
+          if (close && currState.grid[i][row] !== "black") {
+            currState.grid[i][row] = currState.grid[i][row] === 'x' ? 'x' : "X";
+            if (emptyCol.indexOf(row) === -1) {
+              emptyCol.push(row);
+            }
+          } else if (open && currState.grid[i][row] !== "black" ) {
+            currState.grid[i][row] = currState.grid[i][row] === 'x' ? 'x' : "white";
+            emptyCol = emptyCol.filter((colIndex) => colIndex != row);
+          }
+        }
+      } 
+      else {
+        currState.grid[row].map((cell, index) => {
+          if (close && currState.grid[row][index] !== "black") {
+            currState.grid[row][index] = currState.grid[row][index] === 'x' ? 'x' : "X";
+            if (emptyRow.indexOf(row) === -1) {
+              emptyRow.push(row);
+            }
+          }
+          else if (open && currState.grid[row][index] !== "black") {
+            currState.grid[row][index] = currState.grid[row][index] == "x" ? "x" : "white";
+            emptyRow = emptyRow.filter((rowIndex) => rowIndex !== row);
+          }
+        });
+      }
+
+      return currState;
+  }
+}
+
 function App() {
   const [time, setTime] = useState(0);
-  const [ modalIsOpen, setModelIsOpen ] = useState(false);
-  const [grid, setGrid] = useState({
-    grid:
-      JSON.parse(localStorage.getItem("grid")) === null
-        ? generationArray(DUMMY_APPLE.grid.length, DUMMY_APPLE.grid[0].length)
-        : JSON.parse(localStorage.getItem("grid")),
-    statusLineVertical: GetRowsTabsVertical(DUMMY_APPLE.grid).statusTabList,
-    statusLineHorizontal: GetRowsTabsHorizontal(DUMMY_APPLE.grid).statusTabList,
-  });
+  const [modalIsOpen, setModelIsOpen] = useState(false);
+  const [grid, gridDispatch] = useReducer(gridReducer, initialGrid);
 
   function changeColor(indexRow, indexCol, color) {
-    setGrid((prev) => {
-      let curr = { ...prev };
-
-      curr.grid = [...prev.grid];
-
-      curr.grid[indexRow][indexCol] = color;
-      localStorage.setItem("grid", JSON.stringify(curr.grid));
-      return curr;
+    gridDispatch({
+      type: "changeColor",
+      properties: {
+        indexRow,
+        indexCol,
+        color,
+      },
     });
   }
 
   function closeLine(row, direction, action) {
-    let close = action === "close";
-    let open = action === "open";
-
-    if (direction === "vertical") {
-      console.log(grid);
-      for (let i = 0; i < grid.grid.length; i++) {
-        setGrid((prevGrid) => {
-          let currGrid = {
-            ...prevGrid,
-            grid: prevGrid.grid.map((row) => [...row]),
-          };
-          if (close && currGrid.grid[i][row] !== "black") {
-            currGrid.grid[i][row] = "X";
-            if (emptyCol.indexOf(row) === -1) {
-              emptyCol.push(row);
-            }
-          }
-          if (open && currGrid.grid[i][row] !== "black") {
-            currGrid.grid[i][row] = "white";
-            emptyCol = emptyCol.filter((colIndex) => colIndex != row);
-          }
-
-          return currGrid;
-        });
-      }
-    } else {
-      setGrid((prevGrid) => {
-        let currGrid = {
-          ...prevGrid,
-          grid: prevGrid.grid.map((row) => [...row]),
-        };
-        currGrid.grid[row].map((cell, index) => {
-          console.log(currGrid.grid[row][index]);
-          if (close && currGrid.grid[row][index] !== "black") {
-            currGrid.grid[row][index] = "X";
-            if (emptyRow.indexOf(row) === -1) {
-              emptyRow.push(row);
-              console.log(emptyRow);
-            }
-          }
-          if (open && currGrid.grid[row][index] !== "black") {
-            currGrid.grid[row][index] = "white";
-            emptyRow = emptyRow.filter((rowIndex) => rowIndex !== row);
-          }
-        });
-        return currGrid;
-      });
-    }
+    gridDispatch({
+      type: "closeLine",
+      properties: {
+        row,
+        direction,
+        status: action,
+      },
+    });
   }
 
   useEffect(() => {
@@ -101,15 +134,14 @@ function App() {
       clearTimeout(timer);
 
       setModelIsOpen(true);
-    }
-    else{
+    } else {
       modalIsOpen && setModelIsOpen(false);
     }
   }, [grid.grid]);
 
   useEffect(() => {
     timer = setInterval(() => {
-      setTime((prev => prev + 1))
+      setTime((prev) => prev + 1);
     }, 1000);
   }, []);
 
@@ -128,7 +160,7 @@ function App() {
     <GridContext.Provider value={gridCxt}>
       <Modal modalIsOpen={modalIsOpen} time={time} />
       <TopMenu time={time} />
-      <GameField/>
+      <GameField emptyRow={emptyRow} emptyCol={emptyCol}/>
     </GridContext.Provider>
   );
 }
