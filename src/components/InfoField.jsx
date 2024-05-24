@@ -3,10 +3,12 @@ import { useContext } from "react";
 import { GridContext } from "../store/Grid-context.jsx";
 
 import InfoButton from "./InfoButton.jsx";
+import { FocusCellContext } from "../store/FocusCell-context.jsx";
 
 export default function InfoField({ direction, infoTabs }) {
   const { closeLine, statusLineHorizontal, statusLineVertical } =
     useContext(GridContext);
+  const { selectedRow, selectedCol } = useContext(FocusCellContext);
 
   function handleCompleteRow(row, col) {
     const statusTab =
@@ -22,15 +24,21 @@ export default function InfoField({ direction, infoTabs }) {
 
   const cssClasses = {
     mainDiv: "flex h-full",
-    row: "text-end bg-amber-200 flex-1 border border-stone-400",
+    row: "text-end flex-1 border border-stone-400",
   };
+
+  let index
 
   if (direction === "vertical") {
     cssClasses.mainDiv += " flex-row w-full";
     cssClasses.row += " flex flex-col justify-end";
+
+    index = selectedCol;
   } else {
     cssClasses.mainDiv += " flex-col w-full";
     cssClasses.row += " flex flex-row justify-end";
+
+    index = selectedRow;
   }
 
   function getCorrectStyle(indexRow) {
@@ -53,10 +61,18 @@ export default function InfoField({ direction, infoTabs }) {
     return css;
   }
 
+
   return (
     <div className={cssClasses.mainDiv}>
       {infoTabs.map((row, rowIndex) => {
         let css = getCorrectStyle(rowIndex);
+
+        if(index == rowIndex && index){
+          css += ' bg-orange-300'
+        }
+        else{
+          css += ' bg-amber-200'
+        }
 
         return (
           <div className={css} key={rowIndex}>

@@ -13,8 +13,6 @@ import Modal from "./components/Modal.jsx";
 
 import { GridContext } from "./store/Grid-context.jsx";
 
-let timer;
-
 const infoLineVertical = GetRowsTabsVertical(DUMMY_APPLE.grid).tabList;
 const infoLineHorizontal = GetRowsTabsHorizontal(DUMMY_APPLE.grid).tabList;
 
@@ -97,7 +95,6 @@ function gridReducer(state, action) {
 }
 
 function App() {
-  const [time, setTime] = useState(0);
   const [modalIsOpen, setModelIsOpen] = useState(false);
   const [grid, gridDispatch] = useReducer(gridReducer, initialGrid);
 
@@ -131,19 +128,12 @@ function App() {
     );
 
     if (JSON.stringify(finishGrid) === JSON.stringify(DUMMY_APPLE.grid)) {
-      clearTimeout(timer);
 
       setModelIsOpen(true);
     } else {
       modalIsOpen && setModelIsOpen(false);
     }
   }, [grid.grid]);
-
-  useEffect(() => {
-    timer = setInterval(() => {
-      setTime((prev) => prev + 1);
-    }, 1000);
-  }, []);
 
   const gridCxt = {
     name: DUMMY_APPLE.name,
@@ -158,8 +148,8 @@ function App() {
 
   return (
     <GridContext.Provider value={gridCxt}>
-      <Modal modalIsOpen={modalIsOpen} time={time} />
-      <TopMenu time={time} />
+      <Modal modalIsOpen={modalIsOpen}/>
+      <TopMenu/>
       <GameField emptyRow={emptyRow} emptyCol={emptyCol}/>
     </GridContext.Provider>
   );

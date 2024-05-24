@@ -6,7 +6,7 @@ import DUMMY_APPLE from "../scripts/DUMMY_APPLE.js";
 import Table from "./Table.jsx";
 import { timeFormatter } from "../scripts/formatter/timeFormatter.js";
 
-function Modal({ time, modalIsOpen }) {
+function Modal({ modalIsOpen }) {
   const dialog = useRef();
 
   function openModal() {
@@ -32,7 +32,7 @@ function Modal({ time, modalIsOpen }) {
       <div className="flex flex-col items-center py-5 px-8">
         <h1 className="text-2xl">{DUMMY_APPLE.name}</h1>
         <p className="text-stone-600">Complete</p>
-        <p className=" mb-6">{timeFormatter(time)}</p>
+        <p className=" mb-6">00:00</p>
         <Table scale={10} info={true} />
         <button className="mt-4 text-base text-store-700 uppercase font-bold tracking-wide outline-none" onClick={closeModal}>
           Close

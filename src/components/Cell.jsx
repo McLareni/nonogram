@@ -53,6 +53,7 @@ export default function Cell({
   return (
     <div
       className={getCorrectStyle(indexRow, indexCol)}
+      id={!info ? `${indexRow}-${indexCol}` : undefined}
       style={{ width: `${hCell}px` }}
       onClick={(e) => {!info && click(e, indexRow, indexCol)}}
       onContextMenu={(e) => {!info && click(e, indexRow, indexCol)}}

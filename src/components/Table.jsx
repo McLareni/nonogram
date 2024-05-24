@@ -3,6 +3,7 @@ import { useContext } from "react";
 import { GridContext } from "../store/Grid-context.jsx";
 
 import Cell from "./Cell.jsx";
+import { FocusCellContext } from "../store/FocusCell-context.jsx";
 
 let cell = undefined;
 let timmer, startTimmer;
@@ -39,7 +40,7 @@ export default function Table({
     if (e.button === 0) {
       currBg = e.target.classList.contains("bg-stone-900") ? "white" : "black";
     } else if (e.button === 2) {
-      currBg = "x";
+      currBg = e.target.textContent === 'X' ? " " : "x";
     }
 
     e.target.click();
