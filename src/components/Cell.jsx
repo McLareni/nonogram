@@ -2,28 +2,27 @@ import { useContext } from "react";
 
 import { GridContext } from "../store/Grid-context.jsx";
 
+
+// million-ignore
 export default function Cell({
   indexRow,
   indexCol,
-  scale,
   info,
   defaultContent,
   click = () => {},
 }) {
-  const { width, grid } = useContext(GridContext);
-
-  let hCell = 40 - width - scale;
+  const { grid } = useContext(GridContext);
 
   let cssClasses, content;
 
   if (info) {
-    cssClasses = "aspect-square flex-1";
+    cssClasses = "flex-1 border-0 border-black";
     cssClasses +=
       grid[indexRow][indexCol] === "black" ? " bg-black" : " bg-white ";
 
     content = "";
   } else {
-    cssClasses = "aspect-square flex-1 border text-center font-bold text-sm cursor-pointer";
+    cssClasses = "flex-1 border flex justify-center items-center font-bold text-xs cursor-pointer aspect-square";
     cssClasses +=
       grid[indexRow][indexCol] === "black"
         ? " bg-stone-900 border-black"
@@ -54,7 +53,6 @@ export default function Cell({
     <div
       className={getCorrectStyle(indexRow, indexCol)}
       id={!info ? `${indexRow}-${indexCol}` : undefined}
-      style={{ width: `${hCell}px` }}
       onClick={(e) => {!info && click(e, indexRow, indexCol)}}
       onContextMenu={(e) => {!info && click(e, indexRow, indexCol)}}
     >

@@ -3,25 +3,24 @@ import { useContext } from "react";
 import { GridContext } from "../store/Grid-context.jsx";
 
 import Cell from "./Cell.jsx";
-import { FocusCellContext } from "../store/FocusCell-context.jsx";
 
 let cell = undefined;
 let timmer, startTimmer;
 let clamp = false;
 let currBg;
 
-export default function Table({
-  scale = 0,
+
+const Table = function Table({
   info = false,
   emptyRow = [],
   emptyCol = [],
 }) {
   const { grid, changeColor } = useContext(GridContext);
 
-  let cssClasses = "flex flex-col items-center h-full w-full";
+  let cssClasses = "flex flex-col items-center aspect-square";
 
   if (info) {
-    cssClasses += " border border-black";
+    cssClasses += " border border-black min-w-full";
   }
 
   function handleClick(e, indexRow, indexCol) {
@@ -82,7 +81,6 @@ export default function Table({
                   indexRow={rowIndex}
                   indexCol={cellIndex}
                   key={cellIndex}
-                  scale={scale}
                   info={info}
                   click={handleClick}
                 />
@@ -112,4 +110,6 @@ export default function Table({
       })}
     </div>
   );
-}
+};
+
+export default Table

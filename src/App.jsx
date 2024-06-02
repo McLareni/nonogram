@@ -94,8 +94,11 @@ function gridReducer(state, action) {
   }
 }
 
+let interval;
+
 function App() {
   const [modalIsOpen, setModelIsOpen] = useState(false);
+  const [ time, setTime ] = useState(0);
   const [grid, gridDispatch] = useReducer(gridReducer, initialGrid);
 
   function changeColor(indexRow, indexCol, color) {
@@ -121,6 +124,17 @@ function App() {
   }
 
   useEffect(() => {
+    interval = setInterval(() => {
+      setTime(time => time + 1)
+    }, 1000);
+  }, []);
+
+  if(modalIsOpen){
+    console.log("stop");
+    clearInterval(interval);
+  }
+
+  useEffect(() => {
     let finishGrid = grid.grid.map((row) => [...row]);
 
     finishGrid = finishGrid.map((row) =>
@@ -137,8 +151,6 @@ function App() {
 
   const gridCxt = {
     name: DUMMY_APPLE.name,
-    width: DUMMY_APPLE.grid[0].length,
-    heigth: DUMMY_APPLE.grid.length,
     grid: grid.grid,
     changeColor: changeColor,
     closeLine: (row, direction, action) => closeLine(row, direction, action),
@@ -148,8 +160,8 @@ function App() {
 
   return (
     <GridContext.Provider value={gridCxt}>
-      <Modal modalIsOpen={modalIsOpen}/>
-      <TopMenu/>
+      <Modal modalIsOpen={modalIsOpen} time={time}/>
+      <TopMenu time={time}/>
       <GameField emptyRow={emptyRow} emptyCol={emptyCol}/>
     </GridContext.Provider>
   );

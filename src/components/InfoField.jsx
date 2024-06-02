@@ -5,7 +5,7 @@ import { GridContext } from "../store/Grid-context.jsx";
 import InfoButton from "./InfoButton.jsx";
 import { FocusCellContext } from "../store/FocusCell-context.jsx";
 
-export default function InfoField({ direction, infoTabs }) {
+export default function InfoField({ direction, infoTabs, second }) {
   const { closeLine, statusLineHorizontal, statusLineVertical } =
     useContext(GridContext);
   const { selectedRow, selectedCol } = useContext(FocusCellContext);
@@ -23,23 +23,35 @@ export default function InfoField({ direction, infoTabs }) {
   }
 
   const cssClasses = {
-    mainDiv: "flex h-full",
-    row: "text-end flex-1 border border-stone-400",
+    mainDiv: "flex",
+    row: "text-end border border-stone-400",
   };
+
+  if(second){
+    cssClasses.row += ' justify-start';
+  }
+  else{
+    cssClasses.row += ' justify-end';
+  }
 
   let index
 
   if (direction === "vertical") {
     cssClasses.mainDiv += " flex-row w-full";
-    cssClasses.row += " flex flex-col justify-end";
+    cssClasses.row += " flex flex-1 flex-col";
+
+
 
     index = selectedCol;
   } else {
     cssClasses.mainDiv += " flex-col w-full";
-    cssClasses.row += " flex flex-row justify-end";
+    cssClasses.row += " flex flex-row";
+
+
 
     index = selectedRow;
   }
+
 
   function getCorrectStyle(indexRow) {
     let css = cssClasses.row;
@@ -88,6 +100,7 @@ export default function InfoField({ direction, infoTabs }) {
                   key={cellIndex}
                   row={rowIndex}
                   col={cellIndex}
+                  direction={direction}
                 >
                   {cell}
                 </InfoButton>
