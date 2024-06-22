@@ -9,18 +9,21 @@ let timmer, startTimmer;
 let clamp = false;
 let currBg;
 
-
-const Table = function Table({
+// million-ignore
+export default function Table({
   info = false,
   emptyRow = [],
   emptyCol = [],
 }) {
   const { grid, changeColor } = useContext(GridContext);
 
-  let cssClasses = "flex flex-col items-center aspect-square";
+  let cssClasses = "flex flex-col items-center";
 
   if (info) {
-    cssClasses += " border border-black min-w-full";
+    cssClasses += "";
+  }
+  else{
+    cssClasses += ""
   }
 
   function handleClick(e, indexRow, indexCol) {
@@ -66,6 +69,7 @@ const Table = function Table({
   return (
     <div
       className={cssClasses}
+      id={info ? 'result' : 'main'}
       onMouseMove={handleMove}
       onMouseDown={handleDown}
       onMouseUp={handleUp}
@@ -111,5 +115,3 @@ const Table = function Table({
     </div>
   );
 };
-
-export default Table

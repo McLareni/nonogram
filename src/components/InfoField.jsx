@@ -6,7 +6,7 @@ import InfoButton from "./InfoButton.jsx";
 import { FocusCellContext } from "../store/FocusCell-context.jsx";
 
 export default function InfoField({ direction, infoTabs, second }) {
-  const { closeLine, statusLineHorizontal, statusLineVertical } =
+  const { closeLine, statusLineHorizontal, statusLineVertical, grid } =
     useContext(GridContext);
   const { selectedRow, selectedCol } = useContext(FocusCellContext);
 
@@ -24,34 +24,28 @@ export default function InfoField({ direction, infoTabs, second }) {
 
   const cssClasses = {
     mainDiv: "flex",
-    row: "text-end border border-stone-400",
+    row: "text-end border border-stone-400 justify-end",
   };
 
-  if(second){
-    cssClasses.row += ' justify-start';
-  }
-  else{
-    cssClasses.row += ' justify-end';
+  if (second && direction === "horizontal") {
+    cssClasses.row += " justify-end flex-row-reverse";
+  } else if (second && direction === "vertical") {
+    cssClasses.row += " justify-start flex-col-reverse";
   }
 
-  let index
+  let index;
 
   if (direction === "vertical") {
-    cssClasses.mainDiv += " flex-row w-full";
+    cssClasses.mainDiv += " flex-row ";
     cssClasses.row += " flex flex-1 flex-col";
-
-
 
     index = selectedCol;
   } else {
-    cssClasses.mainDiv += " flex-col w-full";
-    cssClasses.row += " flex flex-row";
-
-
+    cssClasses.mainDiv += " flex-col";
+    cssClasses.row += " flex flex-1 flex-row ";
 
     index = selectedRow;
   }
-
 
   function getCorrectStyle(indexRow) {
     let css = cssClasses.row;
@@ -73,17 +67,19 @@ export default function InfoField({ direction, infoTabs, second }) {
     return css;
   }
 
+  const styleVertical = {height: `${8*grid.length}px`};
+  const styleHorizontal = {width: `${8*grid[0].length}px`};
+
 
   return (
-    <div className={cssClasses.mainDiv}>
+    <div className={cssClasses.mainDiv} style={direction === "vertical" ? styleVertical : styleHorizontal} >
       {infoTabs.map((row, rowIndex) => {
         let css = getCorrectStyle(rowIndex);
 
-        if(index == rowIndex && index){
-          css += ' bg-orange-300'
-        }
-        else{
-          css += ' bg-amber-200'
+        if (index == rowIndex && index) {
+          css += " bg-orange-300";
+        } else {
+          css += " bg-amber-200";
         }
 
         return (

@@ -10,8 +10,10 @@ import {
 import GameField from "./components/GameField.jsx";
 import TopMenu from "./components/TopMenu.jsx";
 import Modal from "./components/Modal.jsx";
+import Settings from "./components/Settings.jsx";
 
 import { GridContext } from "./store/Grid-context.jsx";
+
 
 const infoLineVertical = GetRowsTabsVertical(DUMMY_APPLE.grid).tabList;
 const infoLineHorizontal = GetRowsTabsHorizontal(DUMMY_APPLE.grid).tabList;
@@ -100,6 +102,10 @@ function App() {
   const [modalIsOpen, setModelIsOpen] = useState(false);
   const [ time, setTime ] = useState(0);
   const [grid, gridDispatch] = useReducer(gridReducer, initialGrid);
+  const [ visibleField, setVisibleField ] = useState({
+    horizontal: false,
+    vertical: false
+  })
 
   function changeColor(indexRow, indexCol, color) {
     gridDispatch({
@@ -158,11 +164,21 @@ function App() {
     statusLineHorizontal: grid.statusLineHorizontal,
   };
 
+  function changeVisibleField(e, direction){
+    setVisibleField((prevVisible => {
+      let currVisible = {...prevVisible}
+      currVisible[direction] = e.target.checked;
+
+      return currVisible;
+    }))
+  }
+
   return (
     <GridContext.Provider value={gridCxt}>
       <Modal modalIsOpen={modalIsOpen} time={time}/>
       <TopMenu time={time}/>
-      <GameField emptyRow={emptyRow} emptyCol={emptyCol}/>
+      <GameField emptyRow={emptyRow} emptyCol={emptyCol} field={visibleField}/>
+      <Settings onChange={changeVisibleField}/>
     </GridContext.Provider>
   );
 }

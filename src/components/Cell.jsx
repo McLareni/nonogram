@@ -16,13 +16,13 @@ export default function Cell({
   let cssClasses, content;
 
   if (info) {
-    cssClasses = "flex-1 border-0 border-black";
+    cssClasses = "border-0 border-stone-800 aspect-square w-[8px] w-[8px]";
     cssClasses +=
       grid[indexRow][indexCol] === "black" ? " bg-black" : " bg-white ";
 
     content = "";
   } else {
-    cssClasses = "flex-1 border flex justify-center items-center font-bold text-xs cursor-pointer aspect-square";
+    cssClasses = "border flex justify-center items-center font-bold text-[9px] cursor-pointer w-[12px] w-[12px] aspect-square";
     cssClasses +=
       grid[indexRow][indexCol] === "black"
         ? " bg-stone-900 border-black"
@@ -50,13 +50,13 @@ export default function Cell({
   }
 
   return (
-    <div
+    <button
       className={getCorrectStyle(indexRow, indexCol)}
       id={!info ? `${indexRow}-${indexCol}` : undefined}
       onClick={(e) => {!info && click(e, indexRow, indexCol)}}
       onContextMenu={(e) => {!info && click(e, indexRow, indexCol)}}
     >
       {content}
-    </div>
+    </button>
   );
 }

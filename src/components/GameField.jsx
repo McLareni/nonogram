@@ -1,4 +1,4 @@
-import { useState, memo } from "react";
+import { useState, memo, useContext } from "react";
 
 import DUMMY_APPLE from "../scripts/DUMMY_APPLE.js";
 import {
@@ -10,15 +10,18 @@ import { FocusCellContext } from "../store/FocusCell-context.jsx";
 
 import Table from "../components/Table.jsx";
 import InfoField from "../components/InfoField.jsx";
+import { GridContext } from "../store/Grid-context.jsx";
 
 const infoLineVertical = GetRowsTabsVertical(DUMMY_APPLE.grid).tabList;
 const infoLineHorizontal = GetRowsTabsHorizontal(DUMMY_APPLE.grid).tabList;
 
-const GameField = memo(function GameField({ emptyRow, emptyCol }) {
+const GameField = memo(function GameField({ emptyRow, emptyCol, field }) {
   const [focusCell, setFocusCell] = useState({
     row: undefined,
     col: undefined,
   });
+
+  const { statusLineVertical, statusLineHorizontal } = useContext(GridContext);
 
   function handleFocusCell(coord) {
     let [row, col] = coord.split("-");
@@ -37,24 +40,62 @@ const GameField = memo(function GameField({ emptyRow, emptyCol }) {
     setFocusCell: handleFocusCell,
   };
 
+  console.log(field);
+
+
   return (
     <FocusCellContext.Provider value={focusCellCxt}>
-      <div className="mt-[10%]">
-        <section
-          id="table"
-          className="grid grid-cols-[1fr_3fr_1fr] grid-rows-[1fr_3fr_1fr] w-full"
-          onMouseMove={(e) => handleMove(e)}
-        >
-          <Table info={true} />
-          <InfoField direction="vertical" infoTabs={infoLineVertical} />
-          <div></div>
-          <InfoField direction="horizontal" infoTabs={infoLineHorizontal} />
-          <Table emptyCol={emptyCol} emptyRow={emptyRow} />
-          <InfoField direction="horizontal" second={true} infoTabs={infoLineHorizontal} />
-          <div></div>
-          <InfoField direction="vertical" second={true} infoTabs={infoLineVertical} />
-        </section>
-      </div>
+      <table
+        id="table"
+        className="border border-black border-collapse"
+        onMouseMove={(e) => handleMove(e)}
+      >
+        <tbody>
+          <tr>
+            <td>
+              <Table info={true} />
+            </td>
+            <td>
+              <InfoField direction="vertical" infoTabs={infoLineVertical} />
+            </td>
+            <td>{field.horizontal && <div></div>}</td>
+          </tr>
+          <tr>
+            <td>
+              <InfoField direction="horizontal" infoTabs={infoLineHorizontal} />
+            </td>
+            <td>
+              <Table emptyCol={emptyCol} emptyRow={emptyRow} />
+            </td>
+            <td>
+              {field.horizontal && (
+                <InfoField
+                  direction="horizontal"
+                  second={true}
+                  infoTabs={infoLineHorizontal}
+                />
+              )}
+            </td>
+          </tr>
+          <tr>
+            <td>{field.vertical && <div className=""></div>}</td>
+            <td>
+              {field.vertical && (
+                <InfoField
+                  direction="vertical"
+                  second={true}
+                  infoTabs={infoLineVertical}
+                />
+              )}
+            </td>
+            <td>
+              {field.vertical && field.horizontal && (
+                <div className=""></div>
+              )}
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </FocusCellContext.Provider>
   );
 });

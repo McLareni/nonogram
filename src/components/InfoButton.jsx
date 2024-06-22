@@ -14,14 +14,10 @@ export default function InfoButton({ click, row, col, direction, children }) {
   }
 
   let cssBtn =
-    "flex justify-center items-center relative before:absolute before:-top-[40%] before:left-1/2 before:-translate-x-1/2 before:text-black before:text-2xl aspect-square";
+    "flex aspect-square w-[12px] text-[10px] w-[12px] justify-center items-center relative before:absolute before:-top-[40%] before:left-1/2 before:-translate-x-1/2 before:text-black before:text-2xl";
 
   if (styles) {
     cssBtn += " before:content-['x'] text-stone-400";
-  }
-
-  if(direction === 'horizontal'){
-    cssBtn += ' h-full'
   }
 
   return (
