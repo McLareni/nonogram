@@ -1,20 +1,21 @@
-import {  useState } from "react";
+import { useContext, useState } from "react";
+import { GridContext } from "../store/Grid-context";
 
-
-export default function InfoButton({ click, row, col, direction, children }) {
+export default function InfoButton({ click, row, col, children }) {
   const [styles, setStyles] = useState(false);
+  const { cellSize } = useContext(GridContext);
 
-  let handleCloseNumber = function() {
+  let handleCloseNumber = function () {
     click(row, col);
     setStyles((prevStyle) => !prevStyle);
-  }
+  };
 
-  if(click === undefined){
+  if (click === undefined) {
     handleCloseNumber = null;
   }
 
   let cssBtn =
-    "flex aspect-square w-[12px] text-[10px] w-[12px] justify-center items-center relative before:absolute before:-top-[40%] before:left-1/2 before:-translate-x-1/2 before:text-black before:text-2xl";
+    "flex aspect-square justify-center items-center relative before:absolute before:text-black before:h-full before:w-full before:";
 
   if (styles) {
     cssBtn += " before:content-['x'] text-stone-400";
@@ -23,12 +24,14 @@ export default function InfoButton({ click, row, col, direction, children }) {
   return (
     <button
       className={cssBtn}
+      style={{
+        width: +cellSize + 2 + "px",
+        height: +cellSize + 2 + "px",
+        fontSize: +cellSize + "px",
+      }}
       onClick={handleCloseNumber}
     >
       {children}
     </button>
   );
 }
-
-
-

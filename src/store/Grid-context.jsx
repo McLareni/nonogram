@@ -9,4 +9,5 @@ export const GridContext = createContext({
     infoLineHorizontal: [],
     statusLineVertical: [],
     statusLineHorizontal: [],
+    cellSize: 0
 });

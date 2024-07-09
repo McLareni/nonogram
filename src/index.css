@@ -7,3 +7,20 @@
     box-sizing: content-box;
     overflow: hidden;
 }
+
+.barClose{
+    animation: closeBar 1s ease-in forwards;
+}
+
+.barOpen{
+    animation: closeBar 3s ease-in forwards reverse;
+}
+
+@keyframes closeBar{
+    0%{
+        left: 10px
+    }
+    100%{
+        left: -100%
+    }
+}

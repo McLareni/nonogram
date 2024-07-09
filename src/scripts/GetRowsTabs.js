@@ -28,6 +28,10 @@ export function GetRowsTabsHorizontal(array){
 }
 
 export function GetRowsTabsVertical(array){
+    if (array.length === 0){
+        return []
+    }
+
     const tabList = [];
     const statusTabList = [];
 

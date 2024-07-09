@@ -1,14 +1,15 @@
 import { useContext } from "react";
 
 import { GridContext } from "../store/Grid-context.jsx";
-
-import InfoButton from "./InfoButton.jsx";
 import { FocusCellContext } from "../store/FocusCell-context.jsx";
 
+import InfoButton from "./InfoButton.jsx";
+
 export default function InfoField({ direction, infoTabs, second }) {
-  const { closeLine, statusLineHorizontal, statusLineVertical, grid } =
+  const { closeLine, statusLineHorizontal, statusLineVertical, grid, cellSize } =
     useContext(GridContext);
   const { selectedRow, selectedCol } = useContext(FocusCellContext);
+
 
   function handleCompleteRow(row, col) {
     const statusTab =
@@ -67,8 +68,8 @@ export default function InfoField({ direction, infoTabs, second }) {
     return css;
   }
 
-  const styleVertical = {height: `${8*grid.length}px`};
-  const styleHorizontal = {width: `${8*grid[0].length}px`};
+  const styleVertical = {height: `${(cellSize-2)*grid.length}px`};
+  const styleHorizontal = {width: `${(cellSize-2)*grid[0].length}px`};
 
 
   return (

@@ -1,9 +1,9 @@
 import { useContext } from "react";
 
 import { GridContext } from "../store/Grid-context.jsx";
+import { height } from "@fortawesome/free-brands-svg-icons/fa42Group";
 
 
-// million-ignore
 export default function Cell({
   indexRow,
   indexCol,
@@ -11,18 +11,23 @@ export default function Cell({
   defaultContent,
   click = () => {},
 }) {
-  const { grid } = useContext(GridContext);
+  const { grid, cellSize } = useContext(GridContext);
 
-  let cssClasses, content;
+  let cssClasses, cellStyle, content;
 
   if (info) {
-    cssClasses = "border-0 border-stone-800 aspect-square w-[8px] w-[8px]";
+    cssClasses = "border-0 border-black";
     cssClasses +=
       grid[indexRow][indexCol] === "black" ? " bg-black" : " bg-white ";
 
     content = "";
+
+    cellStyle = {
+      width: `${+cellSize-2}px`,
+      height: `${+cellSize-2}px`
+    }
   } else {
-    cssClasses = "border flex justify-center items-center font-bold text-[9px] cursor-pointer w-[12px] w-[12px] aspect-square";
+    cssClasses = "border flex justify-center items-center font-bold cursor-pointer aspect-square";
     cssClasses +=
       grid[indexRow][indexCol] === "black"
         ? " bg-stone-900 border-black"
@@ -30,6 +35,11 @@ export default function Cell({
     content = grid[indexRow][indexCol] === "X" || grid[indexRow][indexCol] === "x"  ? "X" : "";
     if (defaultContent) {
       content = defaultContent;
+    }
+    cellStyle = {
+      width: `${+cellSize+2}px`,
+      height: `${+cellSize+2}px`,
+      fontSize: `${+cellSize-2}px`
     }
   }
 
@@ -50,13 +60,14 @@ export default function Cell({
   }
 
   return (
-    <button
+    <div
       className={getCorrectStyle(indexRow, indexCol)}
+      style={cellStyle}
       id={!info ? `${indexRow}-${indexCol}` : undefined}
       onClick={(e) => {!info && click(e, indexRow, indexCol)}}
       onContextMenu={(e) => {!info && click(e, indexRow, indexCol)}}
     >
       {content}
-    </button>
+    </div>
   );
 }

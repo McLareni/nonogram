@@ -1,84 +1,38 @@
-import { useContext } from "react";
+import { useContext, memo, useEffect } from "react";
 
 import { GridContext } from "../store/Grid-context.jsx";
 
 import Cell from "./Cell.jsx";
 
-let cell = undefined;
-let timmer, startTimmer;
-let clamp = false;
 let currBg;
 
-// million-ignore
-export default function Table({
+export default memo(function Table({
   info = false,
   emptyRow = [],
   emptyCol = [],
+  changeColor,
 }) {
-  const { grid, changeColor } = useContext(GridContext);
-
-  let cssClasses = "flex flex-col items-center";
-
-  if (info) {
-    cssClasses += "";
-  }
-  else{
-    cssClasses += ""
-  }
+  const { grid } = useContext(GridContext);
 
   function handleClick(e, indexRow, indexCol) {
     e.preventDefault();
-    changeColor(indexRow, indexCol, currBg);
+    changeColor(indexRow, indexCol);
   }
 
-  function handleMove(e) {
-    if (clamp) {
-      cell = e.target;
-    }
-  }
+  let cssClasses = "flex flex-col items-center h-full";
 
-  function handleDown(e) {
-    e.preventDefault();
-    if (e.button === 0) {
-      currBg = e.target.classList.contains("bg-stone-900") ? "white" : "black";
-    } else if (e.button === 2) {
-      currBg = e.target.textContent === 'X' ? " " : "x";
-    }
-
-    e.target.click();
-
-    startTimmer = setTimeout(() => {
-      clamp = true;
-      timmer = setInterval(() => {
-        if (!cell) {
-          e.target.click();
-        } else {
-          cell.click();
-        }
-      }, 50);
-    }, 40);
-  }
-
-  function handleUp(e) {
-    clamp = false;
-    cell = undefined;
-    clearInterval(timmer);
-    clearTimeout(startTimmer);
-  }
+  // useEffect(() => {
+  //   return () => {
+  //     handleUp();
+  //   };
+  // }, []);
 
   return (
-    <div
-      className={cssClasses}
-      id={info ? 'result' : 'main'}
-      onMouseMove={handleMove}
-      onMouseDown={handleDown}
-      onMouseUp={handleUp}
-      onMouseLeave={handleUp}
-    >
+    <div className={cssClasses}>
       {grid.map((row, rowIndex) => {
         let cell;
         return (
-          <div className="flex flex-row w-full flex-1" key={rowIndex}>
+          <div className="flex flex-row w-full" key={rowIndex}>
             {row.map((cell, cellIndex) => {
               cell = (
                 <Cell
@@ -114,4 +68,4 @@ export default function Table({
       })}
     </div>
   );
-};
+});
